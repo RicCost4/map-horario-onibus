@@ -51,6 +51,35 @@ class StartPanel:
 
         self.__quit(drive=driver, mensage='Finalizando a obtenção das linhas, Encerrando o Driver.')
         return lists
+    
+    def __information_scraping(self, drive:WebDriver) -> None:
+        # Obtendo os Avisos
+        list_avisos:list[str] = []
+        div_avisos = ElementsLocation.elements(drive, By.ID, 'tabview:j_idt15')
+        location_avisos = ElementsLocation.find_elements(div_avisos, By.TAG_NAME, 'li')
+        if len(location_avisos) > 0:
+            for line in location_avisos:
+                text = line.text
+                list_avisos.append(text)
+        
+        # Obtendo informações da linha
+        obj_informacoes: dict[str, str] = {}
+        div_informacoes = ElementsLocation.elements(drive, By.ID, 'tabview:j_idt21')
+        location_informacoes = ElementsLocation.find_elements(div_informacoes, By.TAG_NAME, 'tr')
+        if len(location_informacoes) > 0:
+            tag_get1 = ElementsLocation.find_elements(location_informacoes[0], By.TAG_NAME, 'td')
+            obj_informacoes['numero'] = tag_get1[1].text
+            obj_informacoes['valor'] = tag_get1[3].text
+
+            tag_get2 = ElementsLocation.find_elements(location_informacoes[1], By.TAG_NAME, 'td')
+            obj_informacoes['nome_linha'] = tag_get2[1].text
+
+        objeto:dict = {
+            "avisos": list_avisos,
+            "informações": obj_informacoes
+        }
+        self.logger.log_info(f'{objeto}')
+        input('Enter p/continuar...')
 
     def __get_process_schedules(self, list_lines:list[str], counter:int) -> Tuple[bool, int]:
         """Função que entra e faz o login no pje"""
@@ -78,6 +107,11 @@ class StartPanel:
             time.sleep(2)
             # btn_localizar
             ElementsLocation.send_click(driver, By.NAME, "form:tabview:j_idt20")
+            # btn_informações da linha
+            self.logger.log_info(f'Acessando pagina de informações da linha {text_line}')
+            ElementsLocation.send_click(driver, By.XPATH, '//*[@id="tabview:j_idt15:j_idt23_data"]/tr/td[1]')
+            # pagina das informações da linha
+            self.__information_scraping(drive=driver)
 
             time.sleep(5)
             driver.get(self.url)
