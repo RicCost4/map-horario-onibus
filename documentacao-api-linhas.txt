@@ -1,0 +1,39 @@
+http://www.consultas.der.mg.gov.br/grgx/sgtm/consulta_linha.xhtml
+
+busca a div > id="form:tabview:campoBusca" e clica no botão da div > <button>...</button>
+
+Localizar a div > id="form:tabview:campoBusca_panel" dentro do <tbody> busca todos os tr, enumerar como um lista, clica
+
+clica no botão <input type="submit" name="form:tabview:j_idt20">
+
+Após recarregar a pagina, busca o id > id="tabview:j_idt15:j_idt23_data" e clicar no link <a>
+
+==========================================Raspagem===================================================
+Página com os dados:
+Localizar mensagens informativas:
+	Localizar a div > class="ui-messages-warn ui-corner-all", e busca todos os <li> como mensagem informativa.
+
+Informações da linha:
+	Localizar a div > id="tabview:j_idt21", localizar todos os <tr>, buscando os dois primeiros;
+		No primeiro <tr>, busca os <td>, sendo que os <td> positivos serão coletados, o primeiro o numero da linha e o segundo a tarifa.
+		No segundo <tr>, busca todos os <td> e so obter o segundo <td> para o dado nome da linha.
+Quadro de Horarios:
+		Localizar a div > id="tabview:j_idt51", nesta div, busca os <h3> para o titulo dos horário e busca tbm os id das div com os horários, agrupar todos em lista ordenadas sendo a posição dos mesmo para ordenação do titulo com os horarios.
+			Dentro de cada div, criar uma matrix para agrupas, pois os <tr> representa as linhas e em cada possue <td> com os valores.
+
+Regra de coleta e montagem do quadro de horário:
+	Mapear a matrix, sendo que a posição referencia da matrix junto com a hora + o minuto, concatenar, sera coletado ate os dados nulos, sendo que sera ignorado ao fazer a concatenação, se durante o final da concatenação, for identificado que a hora em analise, so possui dados nulos, não salvar no objeto do quadro de 'horarios', se encontrado o minuto mapeado referente a hora, junta como 'HH:MM' e armazena na lista do objeto 'horarios'.
+=========================================Banco de Dados===============================================
+Obter os dados  e armazenar em objetos, salvas as linhas no banco de dados, sendo feito uma consulta do numero da linha, aonde, se existir, obter os dados e atualizar, se não existir, cadastrar a linha e os dados.
+
+Estrutura:
+	tb_linhas: {co_seg_linha, nu_linha, no_linha, info_linha, co_uiid_linha, dh_criacao, dh_update}
+	tb_horarios: {co_seg_horario, nu_horário, co_uiid_horario, dh_criacao, dh_update}
+	tb_quadro_horarios: {co_seg_quadro_horario, nu_quadro_horário, ref_horario(tb_horario.co_seg_horario), ref_linha(tb_linha.co_seg_linha), co_uiid_horario, dh_criacao, dh_update}
+==========================================Backend===================================================
+Construir um FastAPI aonde tera os seguintes rotas:
+	GET /busca-linha/:qtd {Retorna uma lista de linhas, sendo o default é 10}
+	GET /busca-linha/numero/:numero {Retorna a linha escolhida pelo numero}
+	GET /busca-linha/nome/:nome {Retorna a linha escolhida pelo nome}
+	GET /visualizar/:numero {Visualizar as informações da linha junto com os horarios}
+==========================================Frontend===================================================
