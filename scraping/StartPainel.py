@@ -53,15 +53,35 @@ class StartPanel:
         list_lines:list[str] = []
         time.sleep(10)
         self.logger.log_info('Localizando as linhas...')
-        # //*[@id="form:tabview:campoBusca"]/button
+
         ElementsLocation.send_click(self.__drive, By.XPATH, '//*[@id="form:tabview:campoBusca"]/button')
         div_pesquisar = ElementsLocation.elements(self.__drive, By.XPATH, '//*[@id="form:tabview:campoBusca_panel"]/table/tbody')
         location_lines = ElementsLocation.find_elements(div_pesquisar, By.TAG_NAME, 'tr')
         if len(location_lines) > 0:
             for line in location_lines:
                 text = line.text
-                print(text)
                 list_lines.append(text)
+            
+            counter = 0
+            while True:
+                text_line = list_lines[counter]
+                self.logger.log_info(f'Obtendo dados da linha: {text_line}')
+                time.sleep(2)
+                # Inserir a linha na busca
+                ElementsLocation.clear_and_send_keys(self.__drive, By.ID, "form:tabview:campoBusca_input", text_line)
+                time.sleep(2)
+                # Selecionar a busca
+                ElementsLocation.send_click(self.__drive, By.ID, "form:tabview:campoBusca_panel")
+                time.sleep(2)
+                # btn_localizar
+                ElementsLocation.send_click(self.__drive, By.NAME, "form:tabview:j_idt20")
 
-        input('Enter p/continuar...')
+                time.sleep(10)
+                self.__drive.get(self.url)
+                self.__drive.refresh()
+                if counter == len(list_lines):
+                    break
+                counter += 1
+
+        input('Enter p/finalizar...')
         self.quit()
