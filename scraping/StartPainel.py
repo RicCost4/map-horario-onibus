@@ -49,7 +49,7 @@ class StartPanel:
                 text = line.text
                 lists.append(text)
 
-        self.__quit(drive=driver, mensage='Fim do processo atual, Encerrando o Driver.')
+        self.__quit(drive=driver, mensage='Finalizando a obtenção das linhas, Encerrando o Driver.')
         return lists
 
     def __get_process_schedules(self, list_lines:list[str], counter:int) -> Tuple[bool, int]:
@@ -68,8 +68,13 @@ class StartPanel:
             # Inserir a linha na busca
             ElementsLocation.clear_and_send_keys(driver, By.ID, "form:tabview:campoBusca_input", text_line)
             time.sleep(2)
-            # Selecionar a busca
-            ElementsLocation.send_click(driver, By.ID, "form:tabview:campoBusca_panel")
+            try:
+                # Selecionar a busca
+                ElementsLocation.send_click(driver, By.ID, "form:tabview:campoBusca_panel")
+            except Exception:
+                self.logger.log_error(f'Erro ao localizar a linha {text_line}')
+                self.__quit(drive=driver, mensage='Reiniciando o Driver...')
+                return [True, counter]
             time.sleep(2)
             # btn_localizar
             ElementsLocation.send_click(driver, By.NAME, "form:tabview:j_idt20")
@@ -79,10 +84,10 @@ class StartPanel:
             self.__refresh_browser(drive=driver)
 
             if counter == len(list_lines):
-                self.__quit(drive=driver, mensage='Fim do processo atual, Encerrando a coleta.')
+                self.__quit(drive=driver, mensage='Fim do acesso atual as linhas, Encerrando a coleta.')
                 return [False, counter]
-            if counter % 4 == 0 and counter != 0:
-                self.__quit(drive=driver, mensage='Fim do processo atual, Reiniciando o Driver.')
+            if counter % 10 == 0 and counter != 0:
+                self.__quit(drive=driver, mensage='Fim do acesso atual as linhas, Reiniciando o Driver.')
                 return [True, counter]
             counter += 1
 
