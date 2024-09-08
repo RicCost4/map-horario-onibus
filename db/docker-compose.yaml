@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_scraping
+    hostname: postgres_scraping
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin_2024
+      POSTGRES_DB: horario_onibus
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5060:5432"
+    restart: always
+
+volumes:
+  postgres_data:

@@ -1,0 +1,9 @@
+# folders
+venv/
+__pycache__/
+.git/
+
+# files
+.env
+.gitignore
+start_scraping.py
