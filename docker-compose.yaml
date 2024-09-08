@@ -1,0 +1,13 @@
+version: "3.3"
+
+services:
+  scraping:
+    container_name: scraping
+    hostname: scraping
+    build: .
+    environment:
+      - TZ=America/Sao_Paulo
+    command: python3 scraping_backgroud.py
+    volumes:
+      - ./scraping/logs:/app/scraping/logs
+    restart: always
